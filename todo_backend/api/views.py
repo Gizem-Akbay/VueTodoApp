@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.db.models import Q
 
-from api.serializers import UserSerializer, LabelSerializer, TodoSerializer
+from api.serializers import RegisterUserSerializer, LabelSerializer, TodoSerializer
 from api.models import Label, Todo
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
@@ -241,8 +241,7 @@ def TodoView(request, todo_id=None):
 def UserCreate(request):
 
     if request.method == "POST":
-
-        serializer = UserSerializer(data=request.data)
+        serializer = RegisterUserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             if user:

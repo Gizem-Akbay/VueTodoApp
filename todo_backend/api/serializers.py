@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 from api.models import Label, Todo
 
-class UserSerializer(serializers.ModelSerializer):
+class RegisterUserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
             required=True,
             validators=[UniqueValidator(queryset=User.objects.all())]
