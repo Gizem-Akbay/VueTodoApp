@@ -3,12 +3,13 @@ import VueRouter from 'vue-router';
 import Todo from '../views/Todo.vue';
 import Login from '../views/Login.vue';
 import Register from '../views/Register.vue';
+// import Navbar from '/components/Navbar.vue';
 
 Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/',
+    path: '/:todo_id?',
     name:  'Todo',
     component: Todo
   },

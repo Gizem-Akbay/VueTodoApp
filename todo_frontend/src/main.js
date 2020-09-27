@@ -6,9 +6,12 @@ import vuetify from './plugins/vuetify';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import auth from './auth';
+import wysiwyg from "vue-wysiwyg";
+
+Vue.use(wysiwyg, {});
+Vue.use(VueAxios, axios);
 
 auth.checkAuth();
-Vue.use(VueAxios, axios);
 Vue.config.productionTip = false;
 
 router.beforeEach((route, redirect, next) => {
