@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.db.models import Q
 
-from api.serializers import RegisterUserSerializer, LabelSerializer, TodoSerializer
+from api.serializers import RegisterUserSerializer, LabelSerializer, TodoListSerializer, TodoSerializer
 from api.models import Label, Todo
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
@@ -85,12 +85,12 @@ def TodoView(request, todo_id=None):
 
     if request.method == 'GET' and request.resolver_match.url_name == 'todos':
         todos = Todo.objects.filter(user = request.user).order_by('-updated_at')
-        todo_serializer = TodoSerializer(todos, many=True)
+        todo_serializer = TodoListSerializer(todos, many=True)
         return Response(todo_serializer.data, status=200)
 
     if request.method == 'GET' and request.resolver_match.url_name == 'shared_todos':
         todos = Todo.objects.filter(assigned_users = request.user)
-        todo_serializer = TodoSerializer(todos, many=True)
+        todo_serializer = TodoListSerializer(todos, many=True)
         return Response(todo_serializer.data, status=200)
 
     if request.method == 'GET' and request.resolver_match.url_name == 'todo':

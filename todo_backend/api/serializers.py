@@ -37,6 +37,13 @@ class LabelSerializer(serializers.ModelSerializer):
         model = Label
         fields = ('name',)
 
+class TodoListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Todo
+        fields = ('id', 'title', 'updated_at')
+
+
 class TodoSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only = True, many = False)
     assigned_users = UserSerializer(read_only = True, many = True)
