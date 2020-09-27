@@ -37,8 +37,7 @@ def LabelView(request, todo_id=None):
 
     if request.method == "GET" and request.resolver_match.url_name == "labels":
         my_labels = Label.objects.filter(user = request.user)
-        label_serializer = LabelSerializer(my_labels, many=True)
-        return Response(label_serializer.data, status=200)
+        return Response(my_labels.values_list('name', flat=True), status=200)
 
     if request.method == 'PUT' and request.resolver_match.url_name == "todo":
 
@@ -50,31 +49,18 @@ def LabelView(request, todo_id=None):
         if not todo_check.exists():
             return Response({'error': 'Permission Denied'}, status=403)
 
-        _id = request.data.get('id', None)
-        name = request.data.get('name', None)
-        color = request.data.get('color', '')
+        labels = request.data.get('labels', [])
+        Label.objects.filter(Q(todo_id = todo_id) & Q(user = request.user)).delete()
 
-        if name is None:
-            return Response({'error': 'Name id is missing'}, status=400)
-
-        if _id: # For Update
-            try:
-                label = Label.objects.get(id = _id)
-            except Label.DoesNotExist:
-                return Response({'error': 'Label not Found'}, status=404)
-
-            if label.user != request.user:
-                return Response({'error': 'Permission Denied'}, status=403)
-        else:
+        for label_name in labels:
             label = Label()
+            label.user = request.user
+            label.name = label_name
+            label.color = ""
+            label.todo_id = todo_id
+            label.save()
 
-        label.user = request.user
-        label.name = name
-        label.color = color
-        label.todo_id = todo_id
-        label.save()
-
-        return Response({'success': ('Label is updated' if _id else 'Label is created')}, status=201)
+        return Response({'success': 'Label is created'}, status=201)
 
     if request.method == 'DELETE' and request.resolver_match.url_name == "labels":
 
@@ -98,7 +84,7 @@ def LabelView(request, todo_id=None):
 def TodoView(request, todo_id=None):
 
     if request.method == 'GET' and request.resolver_match.url_name == 'todos':
-        todos = Todo.objects.filter(user = request.user)
+        todos = Todo.objects.filter(user = request.user).order_by('-updated_at')
         todo_serializer = TodoSerializer(todos, many=True)
         return Response(todo_serializer.data, status=200)
 
@@ -151,14 +137,12 @@ def TodoView(request, todo_id=None):
         todo.title = title
         todo.content = content
         todo.status = status
-
-        if _id:
-            todo.updated_at = timezone.now()
-        else:
+        todo.updated_at = timezone.now()
+        if not _id:
             todo.created_at = timezone.now()
 
         todo.save()
-        return Response({'success': 'todo is created'}, status=201)
+        return Response({'success': 'todo is created', 'id': todo.id}, status=201)
 
     if request.method == 'POST' and request.resolver_match.url_name == 'users':
 

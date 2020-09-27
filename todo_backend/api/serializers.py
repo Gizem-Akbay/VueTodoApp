@@ -35,12 +35,16 @@ class UserSerializer(serializers.ModelSerializer):
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Label
-        fields = '__all__'
+        fields = ('name',)
 
 class TodoSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only = True, many = False)
     assigned_users = UserSerializer(read_only = True, many = True)
-    label_todo = LabelSerializer(read_only = True, many = True)
+    label_todo = serializers.SerializerMethodField()
+
+    def get_label_todo(self, post):
+        return post.label_todo.values_list('name', flat=True)
+
     class Meta:
         model = Todo
         fields = '__all__'
