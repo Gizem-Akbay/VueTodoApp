@@ -17,15 +17,7 @@
 </template>
 
 <script>
-  export default {
-    data: () => ({
-    }),
-  }
-</script>
 
-<script>
-
-import TodoService from '../services/TodoService';
 import Navbar from '../components/Navbar';
 import TodoList from '../components/TodoList';
 import TodoContent from '../components/TodoContent';
@@ -33,13 +25,8 @@ import TodoContent from '../components/TodoContent';
 export default {
   name: 'Todo',
   data: () => ({
-    labels: []
   }),
   created () {
-    TodoService.get_all_labels()
-        .then(response => {
-            this.labels = response.data;
-        });
   },
   components:{
     'nav-bar': Navbar,

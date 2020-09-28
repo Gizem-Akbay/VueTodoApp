@@ -1,5 +1,4 @@
 import router from '../router';
-// import Vue from 'vue';
 
 const LOGIN_URL = 'http://127.0.0.1:8000/api/token/';
 
@@ -51,7 +50,7 @@ export default {
     return new Promise(function (resolve) {
       if (response.status === 401) {
         this.clearAuth();
-        router.go({'name': 'login'});
+        router.go({'name': 'Login'});
       }
       resolve(response);
     }.bind(this));  
