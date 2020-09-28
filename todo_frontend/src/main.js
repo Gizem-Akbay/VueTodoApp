@@ -15,7 +15,7 @@ auth.checkAuth();
 Vue.config.productionTip = false;
 
 router.beforeEach((route, redirect, next) => {
-    if ((auth.user.authenticated || route.name === 'Login' || route.name === 'Register')) {
+    if (auth.user.authenticated || route.meta.required_authorization == false) {
       next();
     } else {
       next('/login');
