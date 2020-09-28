@@ -38,10 +38,10 @@ class LabelSerializer(serializers.ModelSerializer):
         fields = ('name',)
 
 class TodoListSerializer(serializers.ModelSerializer):
-
+    user = UserSerializer(read_only = True, many = False)
     class Meta:
         model = Todo
-        fields = ('id', 'title', 'updated_at')
+        fields = ('id', 'title', 'updated_at', 'status', 'user', )
 
 
 class TodoSerializer(serializers.ModelSerializer):

@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.db.models import Q
+from django.contrib.auth.models import User
 
 from api.serializers import RegisterUserSerializer, LabelSerializer, TodoListSerializer, TodoSerializer
 from api.models import Label, Todo
@@ -157,23 +158,20 @@ def TodoView(request, todo_id=None):
         if todo.user != request.user:
             return Response({'error': 'Permission Denied'}, status=403)
 
-        errors = []
-        success = []
-        users = request.data.get('users', [])
+        usr_email = request.data.get('email', None)
 
-        todo.assigned_users.clear()
+        if not usr_email:
+            return Response({'error': 'User is missing'}, status=400)
 
-        for usr in users:
-            try:
-                user = User.objects.get(username = usr)
-            except User.DoesNotExist:
-                errors.append({'status': '{} User Not Found'.format(usr)})
+        try:
+            user = User.objects.get(email = usr_email)
+        except User.DoesNotExist:
+            return Response({'error': 'User Not Found'}, status=404)
 
-            if not todo.assigned_users.filter(username=user.username).exists():
-                todo.assigned_users.add(user)
-                success.append({'staz'})
+        if not todo.assigned_users.filter(username=user.username).exists():
+            todo.assigned_users.add(user)
 
-        return Response({'success': '', 'errors': errors}, status=200)
+        return Response({'success': 'added user'}, status=200)
 
     if request.method == 'DELETE' and request.resolver_match.url_name == 'todo':
 
@@ -204,17 +202,17 @@ def TodoView(request, todo_id=None):
         if todo.user != request.user:
             return Response({'error': 'Permission Denied'}, status=403)
 
-        username = request.query_params.get('u', None)
+        email = request.query_params.get('email', None)
 
-        if not username:
-            return Response({'error': 'Username is missing'}, status=400)
+        if not email:
+            return Response({'error': 'Email is missing'}, status=400)
 
         try:
-            user = User.objects.get(username = username)
+            user = User.objects.get(email = email)
         except User.DoesNotExist:
             return Response({'error': 'User not Found'}, status=404)
 
-        if todo.assigned_users.filter(username = username).exists():
+        if todo.assigned_users.filter(email = email).exists():
             todo.assigned_users.remove(user)
             return Response({'success': 'User removed the todo list'}, status=200)
         
